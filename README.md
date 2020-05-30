@@ -21,7 +21,7 @@ This microservice offer an endpoint for PrimeiroPay Pre Auth service
 
 **Method** : `POST`
 
-**Auth required** : Beater
+**Auth required** : Bearer
 
 Provide entity_id, amount and card data to do the request.
 ```json
