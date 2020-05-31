@@ -26,10 +26,10 @@ public class HTTPServerVerticle extends AbstractVerticle {
 
     private final Logger LOGGER = LoggerFactory.getLogger(HTTPServerVerticle.class);
 
-    private final JsonObject configuration;
+    private final Integer serverPort;
     
-    public HTTPServerVerticle(final JsonObject configuration) {
-        this.configuration = configuration;
+    public HTTPServerVerticle(final Integer serverPort) {
+        this.serverPort = serverPort;
     }
     
     @Override
@@ -52,7 +52,7 @@ public class HTTPServerVerticle extends AbstractVerticle {
     }
 
     private Integer getServerPort() {
-        return configuration.getInteger("server.port");
+        return serverPort;
     }
     
     private void doPreAuth(RoutingContext rc) {
