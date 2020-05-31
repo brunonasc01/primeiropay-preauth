@@ -14,6 +14,7 @@ import com.primeiropay.preauth.model.AuthRequestModel;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -57,21 +58,21 @@ public class HTTPServerVerticle extends AbstractVerticle {
     private void doPreAuth(RoutingContext rc) {
         AuthRequestModel authRquest = rc.getBodyAsJson().mapTo(AuthRequestModel.class);
 
-        String response = "";
+        JsonObject jsonResponse = new JsonObject();
         try {
-			response = postAuth(authRquest.toString(), rc.request().getHeader("Authorization"));
+        	jsonResponse = postAuth(authRquest.toString(), rc.request().getHeader("Authorization"));
 		} catch (IOException e) {
 			LOGGER.error("HTTP Post error", e.getCause());
 		}
         
         rc.response()
-            .setStatusCode(201)
+            .setStatusCode(200)
             .putHeader("content-type", 
               "application/json; charset=utf-8")
-            .end(response);
+            .end(Json.encodePrettily(jsonResponse));
     }
     
-    private String postAuth(String payload, String authorization) throws IOException {
+    private JsonObject postAuth(String payload, String authorization) throws IOException {
     	URL url = new URL("https://test.oppwa.com/v1/payments");
 
     	HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
@@ -87,9 +88,23 @@ public class HTTPServerVerticle extends AbstractVerticle {
     	int responseCode = conn.getResponseCode();
     	InputStream is;
 
-    	if (responseCode >= 400) is = conn.getErrorStream();
-    	else is = conn.getInputStream();
-
-    	return IOUtils.toString(is);
+    	JsonObject jsonResponse;
+    	
+    	if (responseCode >= 400) {
+    		is = conn.getErrorStream();
+    		jsonResponse = new JsonObject(IOUtils.toString(is));
+    	}
+    	else {
+    		is = conn.getInputStream();
+    		jsonResponse = new JsonObject(IOUtils.toString(is));
+    		
+    		JsonObject jsonSubset = new JsonObject();
+            jsonSubset.put("id", jsonResponse.getString("id"));
+            jsonSubset.put("result", jsonResponse.getJsonObject("result"));
+            
+            jsonResponse = jsonSubset;
+    	}
+    	
+    	return jsonResponse;
     }
 }

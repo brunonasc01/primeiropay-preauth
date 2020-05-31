@@ -27,16 +27,16 @@ Provide entity_id, amount and card data to do the request.
 ```json
 {
 	"entity_id": "[hash key]",
-	"amount":"[number]",
+	"amount":"[string]",
 	"currency":"[string]",
 	"paymentBrand":"[string]",
 	"paymentType":"[string]",
 	"card": {
-	"number":"[number]",
+	"number":"[string]",
 	"holder":"[string]",
-	"expiryMonth":"[number]",
-	"expiryYear":"[number]",
-	"cvv":"[number]"
+	"expiryMonth":"[string]",
+	"expiryYear":"[string]",
+	"cvv":"[string]"
 	}
 }
 ```
@@ -54,6 +54,23 @@ Provide entity_id, amount and card data to do the request.
 	"expiryMonth":"05",
 	"expiryYear":"2020",
 	"cvv":"123"
+	}
+}
+```
+
+## Success Response
+
+**Condition** : If everything is OK.
+
+**Code** : `200 OK`
+
+**Content example**
+```json
+{
+	"id": "8ac7a4a2725fb8f401726abdb1321816",
+	"result": {
+		"code": "000.100.110",
+		"description": "Request successfully processed"
 	}
 }
 ```
